@@ -76,6 +76,14 @@
         </div>
       </div>
     </header>
+    <center>
+      <br />
+      <div class="controls">
+        <button onclick="moveLeft()">Left</button>
+        <button onclick="moveRight()">Right</button>
+        <button onclick="jump()">Jump</button>
+      </div>
+    </center>
 
     <script>
       const character = document.getElementById("character");
@@ -86,6 +94,24 @@
       let gravity = 2;
       let score = 0;
       let blockSpeed = 5; // Kecepatan awal balok
+      let blockInterval;
+      let gravityInterval;
+
+      function startGame() {
+        block.style.left = window.innerWidth + "px";
+        position = 0;
+        score = 0;
+        scoreElement.textContent = "Score: " + score;
+        blockSpeed = 5;
+        isJumping = false;
+        character.style.bottom = position + "px";
+
+        // Mulai pergerakan balok
+        blockInterval = setInterval(moveBlock, 20);
+
+        // Mulai gravitasi
+        gravityInterval = setInterval(applyGravity, 20);
+      }
 
       function moveBlock() {
         let blockLeft = parseInt(
@@ -115,7 +141,7 @@
           characterRect.top < blockRect.bottom
         ) {
           alert("Anda digigit unaaa!!:(");
-          document.location.reload();
+          resetGame();
         }
 
         // Jika balok sudah melewati karakter dan belum ditandai sebagai "passed"
@@ -129,7 +155,7 @@
 
       function updateBlockSpeed() {
         // Kecepatan balok meningkat seiring bertambahnya skor
-        blockSpeed = 5 + Math.floor(score / 5) * 2;
+        blockSpeed = 5 + Math.floor(score / 3) * 2;
       }
 
       function jump() {
@@ -176,17 +202,21 @@
       }
 
       function applyGravity() {
-        setInterval(() => {
-          if (!isJumping) {
-            position -= gravity;
-            if (position < 0) position = 0; // Stop at ground level
-            character.style.bottom = position + "px";
-          }
-        }, 20);
+        if (!isJumping) {
+          position -= gravity;
+          if (position < 0) position = 0; // Stop at ground level
+          character.style.bottom = position + "px";
+        }
       }
 
-      // Mulai pergerakan balok
-      setInterval(moveBlock, 20);
+      function resetGame() {
+        clearInterval(blockInterval);
+        clearInterval(gravityInterval);
+        startGame();
+      }
+
+      // Mulai permainan
+      startGame();
 
       document.addEventListener("keydown", function (event) {
         if (event.key === "ArrowUp") {
@@ -199,8 +229,6 @@
           moveRight();
         }
       });
-
-      applyGravity();
     </script>
 
     <!-- Optional JavaScript -->
